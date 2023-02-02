@@ -5,13 +5,12 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use hyper::{client::HttpConnector, Body};
+use hyper::body::to_bytes;
+use hyper::{client::HttpConnector, Body, Client};
 use hyper_tls::HttpsConnector;
 use lazy_static::lazy_static;
 use std::collections::HashSet;
 use std::net::SocketAddr;
-
-type Client = hyper::client::Client<HttpsConnector<HttpConnector>, Body>;
 
 lazy_static! {
     static ref BANNED_SET: HashSet<String> = {
@@ -45,7 +44,10 @@ fn find_head_commit_author(value: &serde_json::Value) -> Option<String> {
         .map(|v| v.to_string())
 }
 
-async fn webhook_handler(State(client): State<Client>, mut req: Request<Body>) -> Response<Body> {
+async fn webhook_handler(
+    State(client): State<Client<HttpsConnector<HttpConnector>, Body>>,
+    mut req: Request<Body>,
+) -> Response<Body> {
     let path_query = req
         .uri()
         .path_and_query()
@@ -57,7 +59,7 @@ async fn webhook_handler(State(client): State<Client>, mut req: Request<Body>) -
     req.headers_mut().remove("host");
     *req.uri_mut() = Uri::try_from(uri).unwrap();
 
-    let bytes = hyper::body::to_bytes(req.body_mut()).await.unwrap();
+    let bytes = to_bytes(req.body_mut()).await.unwrap();
     let parsed: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
 
     if find_pr_author(&parsed)
@@ -86,7 +88,7 @@ async fn health() -> &'static str {
 #[tokio::main]
 async fn main() -> Result<()> {
     let https = HttpsConnector::new();
-    let client = hyper::Client::builder().build::<_, hyper::Body>(https);
+    let client = Client::builder().build::<_, Body>(https);
 
     let port_env: u16 = std::env::var("PORT")
         .map(|v| v.parse().unwrap())
