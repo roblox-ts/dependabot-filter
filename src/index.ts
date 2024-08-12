@@ -19,7 +19,7 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 
 	const { mode } = request;
 
-	const body = await Bun.readableStreamToArrayBuffer(request.body ?? new ReadableStream());
+	const body = await Bun.readableStreamToText(request.body ?? new ReadableStream());
 
 	const headers = new Headers(request.headers);
 	headers.delete("host");
