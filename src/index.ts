@@ -31,6 +31,11 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 	return fetch(newRequest);
 });
 
+app.onError(({ code, error }) => {
+	log.error(error.toString(), { code, error });
+	return new Response(error.toString());
+});
+
 app.listen(Bun.env.PORT || 8080);
 
 log.debug(`Server is running on port ${app.server?.port}`);
