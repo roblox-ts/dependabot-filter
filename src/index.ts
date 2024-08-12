@@ -17,7 +17,9 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 
 	log.info("Forwarded request", { payload });
 
-	const { mode, body } = request;
+	const { mode } = request;
+
+	const body = await Bun.readableStreamToArrayBuffer(request.body ?? new ReadableStream());
 
 	const headers = new Headers(request.headers);
 	headers.delete("host");
