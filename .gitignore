@@ -1,5 +1,5 @@
-/target
-config.json
-.env
-.vscode/settings.json
+.DS_Store
+
+/node_modules
 /rest
+/.vscode/settings.json
