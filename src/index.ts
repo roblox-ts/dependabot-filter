@@ -19,14 +19,14 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 		return "";
 	}
 
-	const mode = request.mode;
+	const method = request.method;
 
 	const headers = new Headers(request.headers);
 	headers.delete("host");
 
 	const body = JSON.stringify(payload);
 
-	const newRequest = new Request(`https://discord.com${path}`, { mode, headers, body });
+	const newRequest = new Request(`https://discord.com${path}`, { method, headers, body });
 
 	log.info("Forwarded request", { payload, request: newRequest });
 
