@@ -5,9 +5,7 @@ const BANNED_SET = new Set(["dependabot[bot]"]);
 
 const app = new Elysia();
 
-app.onError(({ code, error }) => {
-	log.error(error.toString(), { code, error });
-});
+app.onError(({ code, error }) => log.error(error.toString(), { code, error }));
 
 app.get("/", () => "ok");
 
@@ -19,6 +17,8 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 		return "";
 	}
 
+	log.info("Forwarded request", { payload });
+
 	const method = request.method;
 
 	const headers = new Headers(request.headers);
@@ -26,11 +26,7 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 
 	const body = JSON.stringify(payload);
 
-	const newRequest = new Request(`https://discord.com${path}`, { method, headers, body });
-
-	log.info("Forwarded request", { payload, request: newRequest });
-
-	return fetch(newRequest);
+	return fetch(new Request(`https://discord.com${path}`, { method, headers, body }));
 });
 
 app.listen(Bun.env.PORT || 8080);
