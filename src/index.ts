@@ -24,7 +24,11 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 	const headers = new Headers(request.headers);
 	headers.delete("host");
 
-	return fetch(new Request(`https://discord.com${path}`, { mode, headers, body }));
+	const newRequest = new Request(`https://discord.com${path}`, { mode, headers, body });
+
+	log.info("Forwarding request", { request: newRequest });
+
+	return fetch(newRequest);
 });
 
 app.listen(Bun.env.PORT || 8080);

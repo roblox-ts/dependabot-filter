@@ -1,7 +1,7 @@
 import kleur from "kleur";
 
 export interface LogAttributes {
-	[index: string]: string | number | boolean | null;
+	[index: string]: unknown;
 }
 
 export interface StructuredLog extends LogAttributes {
