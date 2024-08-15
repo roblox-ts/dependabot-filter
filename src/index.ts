@@ -1,5 +1,5 @@
+import log from "@osyris/log";
 import { Elysia } from "elysia";
-import log from "./log";
 
 const BANNED_SET = new Set(["dependabot[bot]"]);
 
