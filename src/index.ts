@@ -13,11 +13,11 @@ app.post("/api/webhooks/*", async ({ request, path }) => {
 	const payload = await request.json();
 
 	if (BANNED_SET.has(payload?.pull_request?.user?.login) || BANNED_SET.has(payload?.head_commit?.author?.name)) {
-		log.info("Blocked request", { payload });
+		log.info("Blocked request");
 		return "";
 	}
 
-	log.info("Forwarded request", { payload });
+	log.info("Forwarded request");
 
 	const method = request.method;
 
